@@ -9,6 +9,7 @@ import ARHMessageEntry from '../Components/ARHClient/ARHMessageEntry';
 import ARHFooter from '../Components/ARHClient/ARHFooter';
 import { DEFAULT_WELCOME_CONTENT } from '../Components/UniversalChatbot/types';
 import { useFlag } from '@unleash/proxy-client-react';
+import { ARH_DEFAULT_FLAG } from './flags';
 
 function useArhBaseUrl() {
   const chrome = useChrome();
@@ -69,6 +70,7 @@ function useArhClient(): UseManagerHook {
   const { loading, isAuthenticated } = useArhAuthenticated();
   const baseUrl = useArhBaseUrl();
   const chrome = useChrome();
+  const arhDefaultFlag = useFlag(ARH_DEFAULT_FLAG);
   const manager = useMemo(() => {
     const client = new IFDClient({
       // Will change to ARH
@@ -103,7 +105,7 @@ function useArhClient(): UseManagerHook {
       stateManager,
       docsUrl:
         'https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/getting_started_with_the_red_hat_hybrid_cloud_console/hcc-help-options_getting-started#ask-red-hat_getting-started',
-      isPreview: false,
+      isPreview: !arhDefaultFlag,
       welcome: {
         content: DEFAULT_WELCOME_CONTENT,
         buttons: [
@@ -119,7 +121,7 @@ function useArhClient(): UseManagerHook {
       },
     };
     return configuration;
-  }, [baseUrl]);
+  }, [baseUrl, arhDefaultFlag]);
 
   if (loading) {
     return { manager: null, loading };
